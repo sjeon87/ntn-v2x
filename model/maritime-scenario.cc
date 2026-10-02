@@ -53,6 +53,18 @@ MaritimeMobilityModel::~MaritimeMobilityModel()
     }
 }
 
+Ptr<MobilityModel>
+MaritimeMobilityModel::Copy() const
+{
+    auto copy = CreateObject<MaritimeMobilityModel>();
+    copy->m_area = m_area;
+    copy->m_speedMps = m_speedMps;
+    copy->m_tickInterval = m_tickInterval;
+    copy->m_position = m_position;
+    copy->m_velocity = m_velocity;
+    return copy;
+}
+
 void
 MaritimeMobilityModel::SetSeaArea(const Box& area)
 {

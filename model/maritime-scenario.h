@@ -37,6 +37,8 @@ class MaritimeMobilityModel : public MobilityModel
     /// Bounded sea area; vessels bounce on box edges.
     void SetSeaArea(const Box& area);
 
+    Ptr<MobilityModel> Copy() const override;
+
   private:
     Vector DoGetPosition() const override;
     void DoSetPosition(const Vector& position) override;
