@@ -6,19 +6,15 @@
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/system-socket.h"
 
 #include <algorithm>
-#include <arpa/inet.h>
 #include <cerrno>
 #include "ns3/constant-velocity-mobility-model.h"
 #include <cmath>
 #include <cstring>
 #include <fstream>
-#include <netinet/in.h>
 #include <sstream>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 namespace ns3
 {
@@ -49,7 +45,7 @@ SumoTraciBridge::~SumoTraciBridge()
 {
     if (m_socketFd >= 0)
     {
-        ::close(m_socketFd);
+        SystemSocket::Close(m_socketFd);
         m_socketFd = -1;
     }
 }
@@ -57,26 +53,10 @@ SumoTraciBridge::~SumoTraciBridge()
 bool
 SumoTraciBridge::ConnectTcp(const std::string& host, uint16_t port)
 {
-    int fd = ::socket(AF_INET, SOCK_STREAM, 0);
+    const auto fd = SystemSocket::Connect(host, port);
     if (fd < 0)
     {
-        NS_LOG_WARN("socket() failed: " << std::strerror(errno));
-        return false;
-    }
-    sockaddr_in addr{};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    if (::inet_pton(AF_INET, host.c_str(), &addr.sin_addr) <= 0)
-    {
-        NS_LOG_WARN("invalid host " << host);
-        ::close(fd);
-        return false;
-    }
-    if (::connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
-    {
-        NS_LOG_WARN("connect() to " << host << ":" << port
-                                   << " failed: " << std::strerror(errno));
-        ::close(fd);
+        NS_LOG_WARN("connect() to " << host << ":" << port << " failed");
         return false;
     }
     // The socket open/connect above is real, but the TraCI stepping wire
@@ -89,7 +69,7 @@ SumoTraciBridge::ConnectTcp(const std::string& host, uint16_t port)
                 << host << ":" << port
                 << " but the TraCI stepping protocol is unimplemented; "
                    "this module is offline FCD-replay only — call LoadFcdTrace().");
-    ::close(fd);
+    SystemSocket::Close(fd);
     m_socketFd = -1;
     return false;
 }
