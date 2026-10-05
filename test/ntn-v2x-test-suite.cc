@@ -39,7 +39,7 @@ class FcdTraceReplayJitterTest : public TestCase
 
     void DoRun() override
     {
-        const std::string trace = "/tmp/ntn-v2x-test-fcd.csv";
+        const std::string trace = CreateTempDirFilename("ntn-v2x-test-fcd.csv");
         const std::size_t nVeh = 10;
         const double simSec = 30.0;
         const double dt = 1.0;
@@ -232,7 +232,7 @@ class HundredVehicleSmokeTest : public TestCase
 
     void DoRun() override
     {
-        const std::string trace = "/tmp/ntn-v2x-test-100veh.csv";
+        const std::string trace = CreateTempDirFilename("ntn-v2x-test-100veh.csv");
         const std::size_t n = 100;
         NS_TEST_ASSERT_MSG_EQ(
             NtnV2xHelper::WriteDeterministicTestFcdCsv(trace, n, 30000.0, 300.0, 1.0),
@@ -691,7 +691,7 @@ class SumoSpeedReachesTheMobilityModelTest : public TestCase
     {
         // A diagonal path, so a wrong heading cannot hide behind an axis.
         // Columns are time, id, x, y, z, speed.
-        const std::string trace = "/tmp/ntn-v2x-v2x6-fcd.csv";
+        const std::string trace = CreateTempDirFilename("ntn-v2x-v2x6-fcd.csv");
         {
             std::ofstream f(trace);
             f << "time,id,x,y,z,speed\n";
